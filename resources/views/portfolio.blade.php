@@ -11,13 +11,14 @@
 <!-- Navigation -->
 <nav>
     <div class="container">
-        <div class="logo">Portfolio</div>
+        <div class="logo">Chandupa Jayalath</div>
         <ul class="nav-links">
             <li><a href="#home">Home</a></li>
             <li><a href="#about">About</a></li>
             <li><a href="#skills">Skills</a></li>
             <li><a href="#projects">Projects</a></li>
             <li><a href="#reviews">Reviews</a></li>
+            <li><a href="#write-review">Write Review</a></li>
             <li><a href="#contact">Contact</a></li>
         </ul>
     </div>
@@ -43,7 +44,8 @@
                 <p>When I'm not coding, I enjoy contributing to open-source projects, writing technical blogs, and mentoring aspiring developers.</p>
             </div>
             <div class="about-image">
-                <img src="{{ asset('images/pic.jpeg') }}" alt="Chandupa Jayalath" class="profile-pic">
+{{--                <div class="profile-pic" style="background: linear-gradient(135deg, #6366f1, #8b5cf6); display: flex; align-items: center; justify-content: center; color: white; font-size: 4rem;">👨‍💻</div>--}}
+                <img src="{{ asset('images/pic.jpeg') }}" alt="Your Name" class="profile-pic">
             </div>
         </div>
     </div>
@@ -129,40 +131,119 @@
     <div class="container">
         <h2 class="section-title">Client Reviews</h2>
         <div class="reviews-grid">
-            <div class="review-card">
-                <div class="review-quote">"</div>
-                <p class="review-text">Exceptional work! The project was delivered on time and exceeded our expectations. Highly professional and skilled developer.</p>
-                <div class="reviewer">
-                    <div class="reviewer-avatar">JD</div>
-                    <div>
-                        <strong>John Doe</strong>
-                        <div class="stars">★★★★★</div>
+            @forelse($reviews ?? [] as $review)
+                <div class="review-card">
+                    <div class="review-quote">"</div>
+                    <p class="review-text">{{ $review->review }}</p>
+                    <div class="reviewer">
+                        <div class="reviewer-avatar">{{ $review->initials }}</div>
+                        <div>
+                            <strong>{{ $review->name }}</strong>
+                            @if($review->position || $review->company)
+                                <p style="font-size: 0.9rem; color: #64748b;">
+                                    @if($review->position) {{ $review->position }} @endif
+                                    @if($review->position && $review->company) at @endif
+                                    @if($review->company) {{ $review->company }} @endif
+                                </p>
+                            @endif
+                            <div class="stars">{{ $review->stars }}</div>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="review-card">
-                <div class="review-quote">"</div>
-                <p class="review-text">Great communication and technical expertise. Transformed our ideas into a beautiful, functional application.</p>
-                <div class="reviewer">
-                    <div class="reviewer-avatar">SS</div>
-                    <div>
-                        <strong>Sarah Smith</strong>
-                        <div class="stars">★★★★★</div>
+            @empty
+                <div class="review-card">
+                    <div class="review-quote">"</div>
+                    <p class="review-text">No reviews yet. Be the first to leave a review!</p>
+                    <div class="reviewer">
+                        <div class="reviewer-avatar">?</div>
+                        <div>
+                            <strong>Waiting for reviews...</strong>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="review-card">
-                <div class="review-quote">"</div>
-                <p class="review-text">Outstanding developer with deep knowledge of Laravel and modern web technologies. Would definitely work again!</p>
-                <div class="reviewer">
-                    <div class="reviewer-avatar">MJ</div>
-                    <div>
-                        <strong>Mike Johnson</strong>
-                        <div class="stars">★★★★★</div>
-                    </div>
-                </div>
-            </div>
+            @endforelse
         </div>
+    </div>
+</section>
+
+<!-- Write a Review Section -->
+<section id="write-review" style="background: var(--light);">
+    <div class="container">
+        <h2 class="section-title">Write a Review</h2>
+        <p style="text-align: center; margin-bottom: 2rem; color: var(--text);">
+            Worked with me? Share your experience and help others make informed decisions.
+        </p>
+
+        <form class="contact-form" action="{{ route('reviews.submit') }}" method="POST">
+            @csrf
+
+            @if(session('success') && request()->is('/') && !session('contact_success'))
+                <div class="alert success">{{ session('success') }}</div>
+            @endif
+
+            <div class="form-group">
+                <label for="review_name">Your Name *</label>
+                <input type="text" id="review_name" name="name" value="{{ old('name') }}" required>
+                @error('name')
+                <div class="error-message">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="form-group">
+                <label for="review_email">Email *</label>
+                <input type="email" id="review_email" name="email" value="{{ old('email') }}" required>
+                <small style="color: #64748b;">Your email will not be published</small>
+                @error('email')
+                <div class="error-message">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="review_company">Company</label>
+                    <input type="text" id="review_company" name="company" value="{{ old('company') }}">
+                    @error('company')
+                    <div class="error-message">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="form-group">
+                    <label for="review_position">Position</label>
+                    <input type="text" id="review_position" name="position" value="{{ old('position') }}">
+                    @error('position')
+                    <div class="error-message">{{ $message }}</div>
+                    @enderror
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="rating">Rating *</label>
+                <div class="star-rating" id="starRating">
+                    <span class="star" data-value="1">☆</span>
+                    <span class="star" data-value="2">☆</span>
+                    <span class="star" data-value="3">☆</span>
+                    <span class="star" data-value="4">☆</span>
+                    <span class="star" data-value="5">☆</span>
+                </div>
+                <input type="hidden" id="rating" name="rating" value="{{ old('rating', 5) }}" required>
+                @error('rating')
+                <div class="error-message">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <div class="form-group">
+                <label for="review_text">Your Review *</label>
+                <textarea id="review_text" name="review" required>{{ old('review') }}</textarea>
+                @error('review')
+                <div class="error-message">{{ $message }}</div>
+                @enderror
+            </div>
+
+            <button type="submit" class="submit-btn">Submit Review</button>
+            <p style="text-align: center; margin-top: 1rem; font-size: 0.9rem; color: #64748b;">
+                Your review will be published after approval
+            </p>
+        </form>
     </div>
 </section>
 
@@ -221,7 +302,7 @@
 <!-- Footer -->
 <footer>
     <div class="container">
-        <p>&copy; 2025 Developer Portfolio. All rights reserved.</p>
+        <p>&copy; 2025 Chandupa Jayalath Portfolio. All rights reserved.<br> Made with Laravel.</p>
     </div>
 </footer>
 
@@ -255,6 +336,57 @@
     document.querySelectorAll('.skill-card').forEach(card => {
         observer.observe(card);
     });
+
+    // Star rating functionality
+    const stars = document.querySelectorAll('.star');
+    const ratingInput = document.getElementById('rating');
+
+    // Set initial rating
+    const initialRating = ratingInput.value || 5;
+    updateStars(initialRating);
+
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            const value = this.getAttribute('data-value');
+            ratingInput.value = value;
+            updateStars(value);
+        });
+
+        star.addEventListener('mouseenter', function() {
+            const value = this.getAttribute('data-value');
+            highlightStars(value);
+        });
+    });
+
+    document.getElementById('starRating').addEventListener('mouseleave', function() {
+        updateStars(ratingInput.value);
+    });
+
+    function updateStars(rating) {
+        stars.forEach(star => {
+            const value = star.getAttribute('data-value');
+            if (value <= rating) {
+                star.classList.add('active');
+                star.textContent = '★';
+            } else {
+                star.classList.remove('active');
+                star.textContent = '☆';
+            }
+        });
+    }
+
+    function highlightStars(rating) {
+        stars.forEach(star => {
+            const value = star.getAttribute('data-value');
+            if (value <= rating) {
+                star.textContent = '★';
+                star.style.color = '#fbbf24';
+            } else {
+                star.textContent = '☆';
+                star.style.color = '#e2e8f0';
+            }
+        });
+    }
 </script>
 </body>
 </html>

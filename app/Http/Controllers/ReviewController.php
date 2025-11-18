@@ -35,7 +35,7 @@ class ReviewController extends Controller
 
         // Create review with approval pending
         Review::create(array_merge($validated, [
-            'is_approved' => false,  // Needs admin approval
+            'is_approved' => false,
             'is_featured' => false
         ]));
 
@@ -116,5 +116,10 @@ class ReviewController extends Controller
     {
         $review->update(['is_featured' => !$review->is_featured]);
         return redirect()->back()->with('success', 'Review featured status updated');
+    }
+
+    public function show(Review $review)
+    {
+        return view('admin.reviews.show', compact('review'));
     }
 }
