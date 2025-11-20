@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Developer Portfolio</title>
+    <title>ChandupaDev Portfolio</title>
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
 <body>
 <!-- Navigation -->
 <nav>
     <div class="container">
-        <div class="logo">Chandupa Jayalath</div>
+        <div class="logo">ChandupaDev</div>
         <ul class="nav-links">
             <li><a href="#home">Home</a></li>
             <li><a href="#about">About</a></li>
@@ -27,7 +27,7 @@
 <!-- Hero Section -->
 <section class="hero" id="home">
     <div class="container">
-        <h1>Hi, I'm a Full Stack Developer</h1>
+        <h1>Hi, I'm Chandupa Jayalath a Full Stack Developer</h1>
         <p>Building amazing web applications with modern technologies</p>
         <a href="#contact" class="btn">Get In Touch</a>
     </div>
@@ -86,42 +86,43 @@
     <div class="container">
         <h2 class="section-title">Featured Projects</h2>
         <div class="projects-grid">
-            <div class="project-card">
-                <div class="project-image">🛒</div>
-                <div class="project-content">
-                    <h3>E-Commerce Platform</h3>
-                    <p>A full-featured online shopping platform with payment integration, inventory management, and admin dashboard.</p>
-                    <div class="project-tags">
-                        <span class="tag">Laravel</span>
-                        <span class="tag">Vue.js</span>
-                        <span class="tag">MySQL</span>
+            @forelse($projects ?? [] as $project)
+                <div class="project-card">
+                    <div class="project-image">{{ $project->icon }}</div>
+                    <div class="project-content">
+                        <h3>{{ $project->title }}</h3>
+                        <p>{{ $project->description }}</p>
+                        <div class="project-tags">
+                            @foreach($project->tags_array as $tag)
+                                <span class="tag">{{ trim($tag) }}</span>
+                            @endforeach
+                        </div>
+
+                        @if($project->demo_url || $project->github_url)
+                            <div class="project-links" style="margin-top: 1rem; display: flex; gap: 0.5rem;">
+                                @if($project->demo_url)
+                                    <a href="{{ $project->demo_url }}" target="_blank" class="btn" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                                        View Demo
+                                    </a>
+                                @endif
+                                @if($project->github_url)
+                                    <a href="{{ $project->github_url }}" target="_blank" class="btn btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.9rem;">
+                                        GitHub
+                                    </a>
+                                @endif
+                            </div>
+                        @endif
                     </div>
                 </div>
-            </div>
-            <div class="project-card">
-                <div class="project-image">📱</div>
-                <div class="project-content">
-                    <h3>Social Media Dashboard</h3>
-                    <p>Analytics dashboard for managing multiple social media accounts with real-time data visualization.</p>
-                    <div class="project-tags">
-                        <span class="tag">React</span>
-                        <span class="tag">Node.js</span>
-                        <span class="tag">MongoDB</span>
+            @empty
+                <div class="project-card">
+                    <div class="project-image">📂</div>
+                    <div class="project-content">
+                        <h3>No Projects Yet</h3>
+                        <p>Projects will appear here once they are added.</p>
                     </div>
                 </div>
-            </div>
-            <div class="project-card">
-                <div class="project-image">📊</div>
-                <div class="project-content">
-                    <h3>Project Management Tool</h3>
-                    <p>Collaborative project management application with task tracking, team collaboration, and reporting features.</p>
-                    <div class="project-tags">
-                        <span class="tag">Laravel</span>
-                        <span class="tag">JavaScript</span>
-                        <span class="tag">PostgreSQL</span>
-                    </div>
-                </div>
-            </div>
+            @endforelse
         </div>
     </div>
 </section>
@@ -130,38 +131,49 @@
 <section id="reviews">
     <div class="container">
         <h2 class="section-title">Client Reviews</h2>
-        <div class="reviews-grid">
-            @forelse($reviews ?? [] as $review)
-                <div class="review-card">
-                    <div class="review-quote">"</div>
-                    <p class="review-text">{{ $review->review }}</p>
-                    <div class="reviewer">
-                        <div class="reviewer-avatar">{{ $review->initials }}</div>
-                        <div>
-                            <strong>{{ $review->name }}</strong>
-                            @if($review->position || $review->company)
-                                <p style="font-size: 0.9rem; color: #64748b;">
-                                    @if($review->position) {{ $review->position }} @endif
-                                    @if($review->position && $review->company) at @endif
-                                    @if($review->company) {{ $review->company }} @endif
-                                </p>
-                            @endif
-                            <div class="stars">{{ $review->stars }}</div>
+        <div class="reviews-container">
+            <div class="reviews-slider" id="reviewsSlider">
+                @forelse($reviews ?? [] as $review)
+                    <div class="review-card">
+                        <div class="review-quote">"</div>
+                        <p class="review-text">{{ $review->review }}</p>
+                        <div class="reviewer">
+                            <div class="reviewer-avatar">{{ $review->initials }}</div>
+                            <div>
+                                <strong>{{ $review->name }}</strong>
+                                @if($review->position || $review->company)
+                                    <p style="font-size: 0.9rem; color: #9ca3af;">
+                                        @if($review->position) {{ $review->position }} @endif
+                                        @if($review->position && $review->company) at @endif
+                                        @if($review->company) {{ $review->company }} @endif
+                                    </p>
+                                @endif
+                                <div class="stars">{{ $review->stars }}</div>
+                            </div>
                         </div>
                     </div>
-                </div>
-            @empty
-                <div class="review-card">
-                    <div class="review-quote">"</div>
-                    <p class="review-text">No reviews yet. Be the first to leave a review!</p>
-                    <div class="reviewer">
-                        <div class="reviewer-avatar">?</div>
-                        <div>
-                            <strong>Waiting for reviews...</strong>
+                @empty
+                    <div class="review-card">
+                        <div class="review-quote">"</div>
+                        <p class="review-text">No reviews yet. Be the first to leave a review!</p>
+                        <div class="reviewer">
+                            <div class="reviewer-avatar">?</div>
+                            <div>
+                                <strong>Waiting for reviews...</strong>
+                            </div>
                         </div>
                     </div>
-                </div>
-            @endforelse
+                @endforelse
+            </div>
+
+            <!-- Slider Navigation -->
+            <div class="slider-nav">
+                <button class="slider-btn" id="prevBtn" onclick="scrollReviews('prev')">‹</button>
+                <button class="slider-btn" id="nextBtn" onclick="scrollReviews('next')">›</button>
+            </div>
+
+            <!-- Slider Dots -->
+            <div class="slider-dots" id="sliderDots"></div>
         </div>
     </div>
 </section>
@@ -341,26 +353,28 @@
     const stars = document.querySelectorAll('.star');
     const ratingInput = document.getElementById('rating');
 
-    // Set initial rating
-    const initialRating = ratingInput.value || 5;
-    updateStars(initialRating);
+    if (ratingInput) {
+        // Set initial rating
+        const initialRating = ratingInput.value || 5;
+        updateStars(initialRating);
 
-    stars.forEach(star => {
-        star.addEventListener('click', function() {
-            const value = this.getAttribute('data-value');
-            ratingInput.value = value;
-            updateStars(value);
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const value = this.getAttribute('data-value');
+                ratingInput.value = value;
+                updateStars(value);
+            });
+
+            star.addEventListener('mouseenter', function() {
+                const value = this.getAttribute('data-value');
+                highlightStars(value);
+            });
         });
 
-        star.addEventListener('mouseenter', function() {
-            const value = this.getAttribute('data-value');
-            highlightStars(value);
+        document.getElementById('starRating').addEventListener('mouseleave', function() {
+            updateStars(ratingInput.value);
         });
-    });
-
-    document.getElementById('starRating').addEventListener('mouseleave', function() {
-        updateStars(ratingInput.value);
-    });
+    }
 
     function updateStars(rating) {
         stars.forEach(star => {
@@ -383,10 +397,218 @@
                 star.style.color = '#fbbf24';
             } else {
                 star.textContent = '☆';
-                star.style.color = '#e2e8f0';
+                star.style.color = 'rgba(255, 255, 255, 0.2)';
             }
         });
     }
+
+    // Reviews Slider Functionality
+    const reviewsSlider = document.getElementById('reviewsSlider');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const dotsContainer = document.getElementById('sliderDots');
+
+    if (reviewsSlider) {
+        const reviewCards = reviewsSlider.querySelectorAll('.review-card');
+        let currentIndex = 0;
+
+        // Create dots
+        reviewCards.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.classList.add('slider-dot');
+            if (index === 0) dot.classList.add('active');
+            dot.addEventListener('click', () => scrollToIndex(index));
+            dotsContainer.appendChild(dot);
+        });
+
+        const dots = dotsContainer.querySelectorAll('.slider-dot');
+
+        function updateDots() {
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentIndex);
+            });
+        }
+
+        function updateButtons() {
+            if (prevBtn && nextBtn) {
+                prevBtn.disabled = currentIndex === 0;
+                nextBtn.disabled = currentIndex === reviewCards.length - 1;
+            }
+        }
+
+        function scrollToIndex(index) {
+            if (index < 0 || index >= reviewCards.length) return;
+            currentIndex = index;
+            const scrollAmount = reviewCards[index].offsetLeft - reviewsSlider.offsetLeft;
+            reviewsSlider.scrollTo({
+                left: scrollAmount,
+                behavior: 'smooth'
+            });
+            updateDots();
+            updateButtons();
+        }
+
+        window.scrollReviews = function(direction) {
+            if (direction === 'prev' && currentIndex > 0) {
+                scrollToIndex(currentIndex - 1);
+            } else if (direction === 'next' && currentIndex < reviewCards.length - 1) {
+                scrollToIndex(currentIndex + 1);
+            }
+        };
+
+        // Auto-scroll on slider scroll
+        let scrollTimeout;
+        reviewsSlider.addEventListener('scroll', () => {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(() => {
+                const scrollPosition = reviewsSlider.scrollLeft;
+                const cardWidth = reviewCards[0].offsetWidth + 32; // card width + gap
+                const newIndex = Math.round(scrollPosition / cardWidth);
+                if (newIndex !== currentIndex) {
+                    currentIndex = newIndex;
+                    updateDots();
+                    updateButtons();
+                }
+            }, 100);
+        });
+
+        // Touch/Swipe support
+        let startX = 0;
+        let scrollLeft = 0;
+
+        reviewsSlider.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].pageX - reviewsSlider.offsetLeft;
+            scrollLeft = reviewsSlider.scrollLeft;
+        });
+
+        reviewsSlider.addEventListener('touchmove', (e) => {
+            const x = e.touches[0].pageX - reviewsSlider.offsetLeft;
+            const walk = (x - startX) * 2;
+            reviewsSlider.scrollLeft = scrollLeft - walk;
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                scrollReviews('prev');
+            } else if (e.key === 'ArrowRight') {
+                scrollReviews('next');
+            }
+        });
+
+        // Initialize buttons
+        updateButtons();
+    }
+
+    // Project Cards Interactive Effects
+    document.querySelectorAll('.project-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            this.style.zIndex = '10';
+        });
+
+        card.addEventListener('mouseleave', function() {
+            this.style.zIndex = '1';
+        });
+
+        // Add click effect
+        card.addEventListener('click', function() {
+            // You can add your own logic here, like opening a modal or navigating to project details
+            const title = this.querySelector('h3').textContent;
+            console.log('Clicked project:', title);
+
+            // Optional: Add a pulse animation
+            this.style.animation = 'none';
+            setTimeout(() => {
+                this.style.animation = '';
+            }, 10);
+        });
+    });
+
+    // Add parallax effect to project cards on scroll
+    const projectCards = document.querySelectorAll('.project-card');
+
+    window.addEventListener('scroll', () => {
+        projectCards.forEach((card, index) => {
+            const rect = card.getBoundingClientRect();
+            const scrollPercent = (window.innerHeight - rect.top) / window.innerHeight;
+
+            if (scrollPercent > 0 && scrollPercent < 1) {
+                const translateY = (scrollPercent - 0.5) * 20;
+                card.style.transform = `translateY(${translateY}px)`;
+            }
+        });
+    });
+
+    // Add loading animation for project images
+    document.querySelectorAll('.project-image').forEach(img => {
+        img.style.opacity = '0';
+        img.style.transform = 'scale(0.9)';
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    setTimeout(() => {
+                        entry.target.style.transition = 'all 0.6s ease';
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'scale(1)';
+                    }, 100);
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        observer.observe(img);
+    });
+
+    // Add stagger animation to tags
+    document.querySelectorAll('.project-card').forEach(card => {
+        card.addEventListener('mouseenter', function() {
+            const tags = this.querySelectorAll('.tag');
+            tags.forEach((tag, index) => {
+                setTimeout(() => {
+                    tag.style.transform = 'translateY(-4px)';
+                }, index * 50);
+            });
+        });
+
+        card.addEventListener('mouseleave', function() {
+            const tags = this.querySelectorAll('.tag');
+            tags.forEach(tag => {
+                tag.style.transform = 'translateY(0)';
+            });
+        });
+    });
+
+    // Mobile menu toggle (if you need it)
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+
+    if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener('click', () => {
+            navLinks.classList.toggle('active');
+            mobileMenuToggle.classList.toggle('active');
+        });
+
+        // Close menu when clicking a link
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                navLinks.classList.remove('active');
+                mobileMenuToggle.classList.remove('active');
+            });
+        });
+    }
+
+    // Add cursor glow effect for project cards
+    document.querySelectorAll('.project-card').forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+
+            card.style.setProperty('--mouse-x', `${x}px`);
+            card.style.setProperty('--mouse-y', `${y}px`);
+        });
+    });
 </script>
 </body>
 </html>

@@ -15,7 +15,14 @@ class ReviewController extends Controller
             ->latest()
             ->limit(6)
             ->get();
-        return view('portfolio', compact('reviews'));
+
+        // Get active skills grouped by category
+        $skills = \App\Models\Skill::active()->ordered()->get()->groupBy('category');
+
+        // Get active projects
+        $projects = \App\Models\Project::active()->ordered()->get();
+
+        return view('portfolio', compact('reviews', 'skills', 'projects'));
     }
 
     // PUBLIC: Submit a review from frontend

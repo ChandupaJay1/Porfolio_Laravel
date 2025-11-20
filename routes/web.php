@@ -41,12 +41,13 @@ Route::post('/logout', function (\Illuminate\Http\Request $request) {
     return redirect('/');
 })->name('logout');
 
-// Admin routes (protected by auth middleware)
+// Admin routes
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
+
+
 
     // Dashboard
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
-    Route::get('/dashboard', [DashboardController::class, 'index']);
 
     // Contacts management
     Route::get('/contacts', [ContactController::class, 'index'])->name('contacts.index');
@@ -64,11 +65,29 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::post('/reviews/{review}/toggle-approval', [ReviewController::class, 'toggleApproval'])->name('reviews.toggle-approval');
     Route::post('/reviews/{review}/toggle-featured', [ReviewController::class, 'toggleFeatured'])->name('reviews.toggle-featured');
 
+    // Skills management
+    Route::get('/skills', [\App\Http\Controllers\Admin\SkillController::class, 'index'])->name('skills.index');
+    Route::get('/skills/create', [\App\Http\Controllers\Admin\SkillController::class, 'create'])->name('skills.create');
+    Route::post('/skills', [\App\Http\Controllers\Admin\SkillController::class, 'store'])->name('skills.store');
+    Route::get('/skills/{skill}/edit', [\App\Http\Controllers\Admin\SkillController::class, 'edit'])->name('skills.edit');
+    Route::put('/skills/{skill}', [\App\Http\Controllers\Admin\SkillController::class, 'update'])->name('skills.update');
+    Route::delete('/skills/{skill}', [\App\Http\Controllers\Admin\SkillController::class, 'destroy'])->name('skills.destroy');
+    Route::post('/skills/{skill}/toggle-active', [\App\Http\Controllers\Admin\SkillController::class, 'toggleActive'])->name('skills.toggle-active');
+
+    // Projects management
+    Route::get('/projects', [\App\Http\Controllers\Admin\ProjectController::class, 'index'])->name('projects.index');
+    Route::get('/projects/create', [\App\Http\Controllers\Admin\ProjectController::class, 'create'])->name('projects.create');
+    Route::post('/projects', [\App\Http\Controllers\Admin\ProjectController::class, 'store'])->name('projects.store');
+    Route::get('/projects/{project}/edit', [\App\Http\Controllers\Admin\ProjectController::class, 'edit'])->name('projects.edit');
+    Route::put('/projects/{project}', [\App\Http\Controllers\Admin\ProjectController::class, 'update'])->name('projects.update');
+    Route::delete('/projects/{project}', [\App\Http\Controllers\Admin\ProjectController::class, 'destroy'])->name('projects.destroy');
+    Route::post('/projects/{project}/toggle-active', [\App\Http\Controllers\Admin\ProjectController::class, 'toggleActive'])->name('projects.toggle-active');
+    Route::post('/projects/{project}/toggle-featured', [\App\Http\Controllers\Admin\ProjectController::class, 'toggleFeatured'])->name('projects.toggle-featured');
+
     Route::get('/login', function () {
         if (Auth::check()) {
             return redirect()->route('admin.dashboard');
         }
         return view('auth.simple-login'); // Changed to simple-login
     })->name('login');
-
 });

@@ -45,6 +45,26 @@
                 ⏳
             </div>
         </div>
+
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3>{{ $stats['total_projects'] }}</h3>
+                <p>Total Projects</p>
+            </div>
+            <div class="stat-icon projects">
+                💼
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-info">
+                <h3>{{ $stats['active_projects'] }}</h3>
+                <p>Active Projects</p>
+            </div>
+            <div class="stat-icon active">
+                ✅
+            </div>
+        </div>
     </div>
 
     <!-- Recent Activity -->
@@ -72,9 +92,9 @@
                                 <td><strong>{{ $contact->name }}</strong></td>
                                 <td>{{ Str::limit($contact->subject, 30) }}</td>
                                 <td>
-                                        <span class="badge {{ $contact->is_read ? 'badge-success' : 'badge-warning' }}">
-                                            {{ $contact->is_read ? 'Read' : 'Unread' }}
-                                        </span>
+                                    <span class="badge {{ $contact->is_read ? 'badge-success' : 'badge-warning' }}">
+                                        {{ $contact->is_read ? 'Read' : 'Unread' }}
+                                    </span>
                                 </td>
                                 <td style="color: #64748b;">{{ $contact->created_at->diffForHumans() }}</td>
                             </tr>
@@ -112,14 +132,14 @@
                             <tr>
                                 <td><strong>{{ $review->name }}</strong></td>
                                 <td>
-                                        <span style="color: #fbbf24; font-size: 1.1rem;">
-                                            {{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}
-                                        </span>
+                                    <span style="color: #fbbf24; font-size: 1.1rem;">
+                                        {{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}
+                                    </span>
                                 </td>
                                 <td>
-                                        <span class="badge {{ $review->is_approved ? 'badge-success' : 'badge-warning' }}">
-                                            {{ $review->is_approved ? 'Approved' : 'Pending' }}
-                                        </span>
+                                    <span class="badge {{ $review->is_approved ? 'badge-success' : 'badge-warning' }}">
+                                        {{ $review->is_approved ? 'Approved' : 'Pending' }}
+                                    </span>
                                     @if($review->is_featured)
                                         <span class="badge badge-info">Featured</span>
                                     @endif
@@ -139,6 +159,73 @@
         </div>
     </div>
 
+    <!-- Recent Projects -->
+    <div class="card" style="margin-top: 30px;">
+        <div class="card-header">
+            <h2>Recent Projects</h2>
+            <div style="display: flex; gap: 10px;">
+                <a href="{{ route('admin.projects.create') }}" class="btn">➕ Add New</a>
+                <a href="{{ route('admin.projects.index') }}" class="btn btn-secondary">View All</a>
+            </div>
+        </div>
+        <div class="card-body">
+            @if($recent_projects->count() > 0)
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Icon</th>
+                        <th>Title</th>
+                        <th>Tags</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    @foreach($recent_projects as $project)
+                        <tr style="cursor: pointer;" onclick="window.location='{{ route('admin.projects.edit', $project) }}'">
+                            <td style="font-size: 1.5rem;">{{ $project->icon }}</td>
+                            <td>
+                                <strong>{{ $project->title }}</strong>
+                                <br>
+                                <small style="color: #64748b;">{{ Str::limit($project->description, 50) }}</small>
+                            </td>
+                            <td>
+                                <div style="display: flex; gap: 5px; flex-wrap: wrap;">
+                                    @php
+                                        $tagsArray = is_array($project->tags) ? $project->tags : explode(',', $project->tags);
+                                        $displayTags = array_slice($tagsArray, 0, 3);
+                                    @endphp
+                                    @foreach($displayTags as $tag)
+                                        <span class="badge badge-info" style="font-size: 0.75rem;">{{ trim($tag) }}</span>
+                                    @endforeach
+                                    @if(count($tagsArray) > 3)
+                                        <span class="badge" style="background: #94a3b8; font-size: 0.75rem;">+{{ count($tagsArray) - 3 }}</span>
+                                    @endif
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge {{ $project->is_active ? 'badge-success' : 'badge-secondary' }}">
+                                    {{ $project->is_active ? 'Active' : 'Hidden' }}
+                                </span>
+                                @if($project->is_featured)
+                                    <span class="badge" style="background: #f59e0b; color: white;">⭐ Featured</span>
+                                @endif
+                            </td>
+                            <td style="color: #64748b;">{{ $project->created_at->diffForHumans() }}</td>
+                        </tr>
+                    @endforeach
+                    </tbody>
+                </table>
+            @else
+                <div class="empty-state">
+                    <div class="empty-state-icon">💼</div>
+                    <p>No projects yet</p>
+                    <a href="{{ route('admin.projects.create') }}" class="btn" style="margin-top: 15px;">➕ Add Your First Project</a>
+                </div>
+            @endif
+        </div>
+    </div>
+
     <!-- Quick Actions -->
     <div class="card" style="margin-top: 30px;">
         <div class="card-header">
@@ -146,6 +233,9 @@
         </div>
         <div class="card-body" style="padding: 25px;">
             <div class="quick-actions">
+                <a href="{{ route('admin.projects.create') }}" class="btn">
+                    💼 Add New Project
+                </a>
                 <a href="{{ route('admin.reviews.create') }}" class="btn">
                     ➕ Add New Review
                 </a>
@@ -174,6 +264,10 @@
             <div>
                 <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 5px;">Unread Messages</p>
                 <p style="font-size: 1.5rem; font-weight: 700; color: #ec4899;">{{ $stats['unread_contacts'] }}</p>
+            </div>
+            <div>
+                <p style="color: #64748b; font-size: 0.9rem; margin-bottom: 5px;">Featured Projects</p>
+                <p style="font-size: 1.5rem; font-weight: 700; color: #3b82f6;">{{ $stats['featured_projects'] }}</p>
             </div>
         </div>
     </div>

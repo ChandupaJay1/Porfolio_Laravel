@@ -449,6 +449,16 @@
                 <span>Reviews</span>
             </a>
 
+            <a href="{{ route('admin.projects.index') }}" class="admin-nav-item {{ request()->routeIs('admin.projects.*') ? 'active' : '' }}">
+                <span class="admin-nav-icon">🚀</span>
+                <span>Projects</span>
+            </a>
+
+            <a href="{{ route('admin.skills.index') }}" class="admin-nav-item {{ request()->routeIs('admin.skills.*') ? 'active' : '' }}">
+                <span class="admin-nav-icon">💪</span>
+                <span>Skills</span>
+            </a>
+
             <a href="{{ route('home') }}" class="admin-nav-item" target="_blank">
                 <span class="admin-nav-icon">🌐</span>
                 <span>View Website</span>
